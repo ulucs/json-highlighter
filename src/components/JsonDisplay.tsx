@@ -32,12 +32,13 @@ export const JsonDisplay: React.FC<{
     );
   }
 
+  const objEntries = Object.entries(object);
   return (
     <>
       {"\n"}
       {" ".repeat(depth)}
       {"{"}
-      {Object.entries(object).map(([key, val]) => (
+      {objEntries.map(([key, val], i) => (
         <div key={key}>
           {" ".repeat(depth + 2)}
           {keyLink(path, key)}:{" "}
@@ -48,8 +49,7 @@ export const JsonDisplay: React.FC<{
               path={[...path, key]}
               keyLink={keyLink}
             />
-            {key !== Object.keys(object)[Object.keys(object).length - 1] &&
-              ", "}
+            {i !== objEntries.length - 1 && ", "}
           </>
         </div>
       ))}
