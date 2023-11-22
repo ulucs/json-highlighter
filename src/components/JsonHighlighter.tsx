@@ -5,10 +5,8 @@ import { JsonDisplay } from "./JsonDisplay";
 
 const pick = (obj: JSONObject, key: string): JSONObject | undefined => {
   const nestedKeys = key.match(/(\.[a-zA-Z_]+|\[[0-9]+\])/g) ?? [];
-  console.log(nestedKeys);
 
   return nestedKeys.reduce<JSONObject | undefined>((obj, key) => {
-    console.log(obj, key);
     if (typeof obj !== "object") {
       return undefined;
     }
