@@ -1,17 +1,12 @@
-import { Fragment } from "react";
-import { Link } from "./Link";
+import { Fragment, ReactNode } from "react";
 import { JSONObject } from "../types/JSONObject";
-
-const collectKeys = (keys: (string | number)[]): string =>
-  keys
-    .map((key) => (typeof key === "number" ? `[${key}]` : `.${key}`))
-    .join("");
 
 export const JsonDisplay: React.FC<{
   object: JSONObject;
   depth?: number;
+  keyLink: (path: (string | number)[], key: string) => ReactNode;
   path?: (string | number)[];
-}> = ({ object, depth = 0, path = [] }) => {
+}> = ({ object, keyLink, depth = 0, path = [] }) => {
   if (typeof object !== "object" || object === null) {
     return JSON.stringify(object);
   }
@@ -22,12 +17,17 @@ export const JsonDisplay: React.FC<{
         [
         {object.map((val, i) => (
           <Fragment key={i}>
-            <JsonDisplay object={val} depth={depth + 2} path={[...path, i]} />
+            <JsonDisplay
+              object={val}
+              depth={depth + 2}
+              path={[...path, i]}
+              keyLink={keyLink}
+            />
             {i !== object.length - 1 && ", "}
           </Fragment>
         ))}
         {"\n"}
-        {" ".repeat((depth - 1) * 2)}]
+        {" ".repeat(depth)}]
       </>
     );
   }
@@ -40,16 +40,14 @@ export const JsonDisplay: React.FC<{
       {Object.entries(object).map(([key, val]) => (
         <div key={key}>
           {" ".repeat(depth + 2)}
-          <Link
-            href={`?chosenKey=${encodeURIComponent(
-              collectKeys([...path, key])
-            )}`}
-          >
-            <b>{JSON.stringify(key)}</b>
-          </Link>
-          :{" "}
+          {keyLink(path, key)}:{" "}
           <>
-            <JsonDisplay object={val} depth={depth + 2} path={[...path, key]} />
+            <JsonDisplay
+              object={val}
+              depth={depth + 2}
+              path={[...path, key]}
+              keyLink={keyLink}
+            />
             {key !== Object.keys(object)[Object.keys(object).length - 1] &&
               ", "}
           </>

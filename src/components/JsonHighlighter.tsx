@@ -1,5 +1,6 @@
 import { useSearch } from "../hooks/useSearch";
 import { JSONObject } from "../types/JSONObject";
+import { Link } from "./Link";
 import { JsonDisplay } from "./JsonDisplay";
 
 const pick = (obj: JSONObject, key: string): JSONObject | undefined => {
@@ -30,6 +31,11 @@ const pick = (obj: JSONObject, key: string): JSONObject | undefined => {
   }, obj);
 };
 
+const collectKeys = (keys: (string | number)[]): string =>
+  keys
+    .map((key) => (typeof key === "number" ? `[${key}]` : `.${key}`))
+    .join("");
+
 export const JsonHighlighter: React.FC<{
   json: string;
 }> = (props) => {
@@ -45,7 +51,18 @@ export const JsonHighlighter: React.FC<{
 
       <h2>Full JSON</h2>
       <pre>
-        <JsonDisplay object={jsonVal} />
+        <JsonDisplay
+          object={jsonVal}
+          keyLink={(path, key) => (
+            <Link
+              href={`?chosenKey=${encodeURIComponent(
+                collectKeys([...path, key])
+              )}`}
+            >
+              <b>{JSON.stringify(key)}</b>
+            </Link>
+          )}
+        />
       </pre>
     </>
   );
